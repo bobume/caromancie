@@ -62,12 +62,34 @@
     }
 
     .hero {
-      background: linear-gradient(135deg, #ede3fa 0%, #ffffff 100%);
+      position: relative;
+      min-height: 60vh;
       padding: 4rem 2rem 3rem;
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 3rem;
       align-items: center;
+      overflow: hidden;
+      background: linear-gradient(135deg, #ede3fa 0%, #ffffff 100%);
+    }
+
+    .hero-bg{
+      position: absolute;
+      inset: 0;
+      background-image: url('images/hero_caromancie.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      filter: blur(14px) brightness(.55);
+      transform: scale(1.1);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .hero-content{
+      position: relative;
+      z-index: 2;
+      max-width: 60%;
     }
 
     .hero-content h2 {
@@ -87,13 +109,23 @@
 
     .hero-image {
       border-radius: 12px;
-      overflow: hidden;
+      overflow: visible;
       box-shadow: 0 10px 40px rgba(74, 95, 127, 0.12);
+      position: relative;
+      z-index: 3;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
-    .hero-image img {
-      width: 100%;
+    .hero-image img,
+    .hero-portrait {
+      width: 90%;
+      max-width: 420px;
       height: auto;
+      object-fit: cover;
+      border-radius: 12px;
+      box-shadow: 0 14px 40px rgba(30, 30, 60, 0.18);
       display: block;
     }
 
@@ -212,6 +244,10 @@
         padding: 2rem 2rem;
       }
 
+      .hero-content{ max-width: 100%; }
+
+      .hero-portrait{ width: 60%; max-width: 320px; margin: 1.5rem auto 0 auto; }
+
       .hero-content h2 {
         font-size: 1.8rem;
       }
@@ -239,7 +275,8 @@
   </header>
 
   <main>
-    <section class="hero">
+    <section class="hero" aria-label="Bandeau principal">
+      <div class="hero-bg" aria-hidden="true"></div>
       <div class="hero-content">
         <h2>Ose t’écouter, vis à fond !</h2>
         <p>Les cartes sont là pour t’aider à mettre de la lumière sur ce que tu ressens déjà au fond de toi. Parfois, on
@@ -249,7 +286,7 @@
         <p>Besoin d’y voir plus clair ? On en parle ensemble 💙💙</p>
       </div>
       <div class="hero-image">
-        <img src="images/hero_caromancie.png" alt="Caromancie - Consultations et guidances">
+        <img class="hero-portrait" src="images/hero_caromancie.png" alt="Portrait illustratif de Caromancie" loading="lazy">
       </div>
     </section>
 

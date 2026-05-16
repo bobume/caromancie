@@ -76,9 +76,9 @@
     .hero-bg{
       position: absolute;
       inset: 0;
-      background-image: url('images/hero_caromancie.png');
+      background-image: url('images/hero-1600.jpg');
       background-size: cover;
-      background-position: center;
+      background-position: center right;
       background-repeat: no-repeat;
       filter: blur(14px) brightness(.55);
       transform: scale(1.1);
@@ -124,6 +124,7 @@
       max-width: 420px;
       height: auto;
       object-fit: cover;
+      object-position: center right;
       border-radius: 12px;
       box-shadow: 0 14px 40px rgba(30, 30, 60, 0.18);
       display: block;
@@ -286,7 +287,11 @@
         <p>Besoin d’y voir plus clair ? On en parle ensemble 💙💙</p>
       </div>
       <div class="hero-image">
-        <img class="hero-portrait" src="images/hero_caromancie.png" alt="Portrait illustratif de Caromancie" loading="lazy">
+        <picture>
+          <source type="image/webp" srcset="images/hero-480.webp 480w, images/hero-800.webp 800w, images/hero-1200.webp 1200w, images/hero-1600.webp 1600w" sizes="(max-width:768px) 100vw, 40vw">
+          <source type="image/jpeg" srcset="images/hero-480.jpg 480w, images/hero-800.jpg 800w, images/hero-1200.jpg 1200w, images/hero-1600.jpg 1600w" sizes="(max-width:768px) 100vw, 40vw">
+          <img class="hero-portrait" src="images/hero-1200.jpg" alt="Portrait illustratif de Caromancie" loading="lazy">
+        </picture>
       </div>
     </section>
 

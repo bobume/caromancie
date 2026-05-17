@@ -189,6 +189,14 @@ Si plusieurs solutions existent :
 - proposer d’abord la plus simple,
 - puis éventuellement les alternatives.
 
+# Terminal recommandé
+
+Le terminal recommandé pour ce projet sous Windows est Git Bash.
+
+Éviter PowerShell quand ce n’est pas nécessaire.
+
+Les commandes et scripts doivent être compatibles Git Bash.
+
 Ne jamais transformer un petit besoin simple en système complexe.
 
 Le projet doit rester agréable, léger et motivant à développer.

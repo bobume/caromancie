@@ -1,10 +1,67 @@
-﻿<!DOCTYPE html>
+param(
+  [string]$Root = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+)
+
+$DataPath = Join-Path $Root "data\site.json"
+$OutputPath = Join-Path $Root "public\index.html"
+
+function Encode-Html {
+  param([AllowNull()][object]$Value)
+  return [System.Net.WebUtility]::HtmlEncode([string]$Value)
+}
+
+function Render-Paragraphs {
+  param([object[]]$Paragraphs)
+
+  $html = @()
+  foreach ($paragraph in $Paragraphs) {
+    if (-not [string]::IsNullOrWhiteSpace([string]$paragraph)) {
+      $html += "        <p>$(Encode-Html $paragraph)</p>"
+    }
+  }
+  return ($html -join "`n")
+}
+
+function Render-Navigation {
+  param([object[]]$Items)
+
+  $html = @()
+  foreach ($item in $Items) {
+    $html += "        <a href=""$(Encode-Html $item.href)"">$(Encode-Html $item.label)</a>"
+  }
+  return ($html -join "`n")
+}
+
+function Render-Cards {
+  param([object[]]$Cards)
+
+  $html = @()
+  foreach ($card in $Cards) {
+    $html += @"
+        <article class="philosophy-card">
+          <h4>$(Encode-Html $card.title)</h4>
+          <p>$(Encode-Html $card.text)</p>
+        </article>
+"@
+  }
+  return ($html -join "`n")
+}
+
+$data = Get-Content -Raw -Encoding UTF8 -LiteralPath $DataPath | ConvertFrom-Json
+
+$navigation = Render-Navigation $data.navigation
+$heroParagraphs = Render-Paragraphs $data.hero.paragraphs
+$cards = Render-Cards $data.philosophy.cards
+$contactParagraphs = Render-Paragraphs $data.contact.paragraphs
+
+$html = @"
+<!DOCTYPE html>
 <html lang="fr">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Caromancie - Consultations &amp; Guidances</title>
+  <title>$(Encode-Html $data.site.title)</title>
   <style>
     * {
       margin: 0;
@@ -83,7 +140,7 @@
     .hero-bg {
       position: absolute;
       inset: 0;
-      background-image: url('images/hero_caromancie.png');
+      background-image: url('$(Encode-Html $data.hero.image)');
       background-size: cover;
       background-position: center right;
       background-repeat: no-repeat;
@@ -259,10 +316,9 @@
 <body>
   <header>
     <div class="container">
-      <h1>Caromancie</h1>
+      <h1>$(Encode-Html $data.site.name)</h1>
       <nav>
-        <a href="#philosophie">Approche</a>
-        <a href="#contact">Contact</a>
+$navigation
       </nav>
     </div>
   </header>
@@ -271,55 +327,41 @@
     <section class="hero" aria-label="Bandeau principal">
       <div class="hero-bg" aria-hidden="true"></div>
       <div class="hero-content">
-        <h2>Ose t&#39;&#233;couter !!!</h2>
-        <p>Les cartes sont l&#224; pour t&#39;aider &#224; mettre de la lumi&#232;re sur ce que tu ressens d&#233;j&#224; au fond de toi. Parfois, on a juste besoin d&#39;un petit d&#233;clic pour y voir plus clair, reprendre confiance ou avancer plus sereinement.</p>
-        <p>Ici, pas de grands discours compliqu&#233;s ni de promesses magiques. Juste un moment simple, bienveillant et sinc&#232;re pour faire le point sur ce qui compte vraiment pour toi.</p>
-        <p>Besoin d&#39;y voir plus clair ? On en parle ensemble.</p>
+        <h2>$(Encode-Html $data.hero.title)</h2>
+$heroParagraphs
       </div>
       <div class="hero-image">
-        <img src="images/hero_caromancie.png" alt="Portrait illustratif de Caromancie" loading="lazy">
+        <img src="$(Encode-Html $data.hero.image)" alt="$(Encode-Html $data.hero.imageAlt)" loading="lazy">
       </div>
     </section>
 
     <section class="philosophy" id="philosophie">
       <div class="container">
-        <h3>Ma philosophie</h3>
+        <h3>$(Encode-Html $data.philosophy.title)</h3>
         <div class="philosophy-grid">
-        <article class="philosophy-card">
-          <h4>Tes envies ont leur place</h4>
-          <p>On passe trop de temps &#224; suivre ce qu&#39;on attend de nous. Pourtant, ce sont souvent nos vraies envies qui nous montrent la bonne direction. Je t&#39;aide &#224; les &#233;couter un peu plus.</p>
-        </article>
-        <article class="philosophy-card">
-          <h4>Retrouver ce qui te fait du bien</h4>
-          <p>Ce qui te fait sourire, vibrer ou te sentir vivante m&#233;rite de reprendre de la place dans ta vie. M&#234;me les petites choses comptent.</p>
-        </article>
-        <article class="philosophy-card">
-          <h4>Un &#233;change en toute simplicit&#233;</h4>
-          <p>Tu peux venir avec tes questions, tes doutes ou simplement ton ressenti du moment. Ici, il n&#39;y a pas de jugement, juste un &#233;change humain et authentique.</p>
-        </article>
-        <article class="philosophy-card">
-          <h4>Avancer avec l&#233;g&#232;ret&#233;</h4>
-          <p>Les choses profondes n&#39;ont pas besoin d&#39;&#234;tre lourdes. On peut r&#233;fl&#233;chir, &#233;voluer et avancer tout en gardant de la douceur, du sourire et un peu de l&#233;g&#232;ret&#233;.</p>
-        </article>
+$cards
         </div>
       </div>
     </section>
 
     <section class="cta-section" id="contact">
-      <h3>Envie d&#39;&#233;changer ?</h3>
-        <p>Si tu ressens le besoin de faire le point, d&#39;&#234;tre guid&#233;e ou simplement de prendre un moment pour toi, je serai heureuse de t&#39;accompagner.</p>
-        <p>Consultations en ligne, tranquillement et &#224; ton rythme. &#201;cris-moi et nous trouverons ensemble ce qui te convient le mieux.</p>
+      <h3>$(Encode-Html $data.contact.title)</h3>
+$contactParagraphs
     </section>
 
     <div class="site-signature">
-      Caromancie - des guidances sinc&#232;res pour les vraies questions de la vie.
+      $(Encode-Html $data.site.name) - $(Encode-Html $data.site.tagline).
     </div>
   </main>
 
   <footer>
-    <p>Caromancie &#169; 2026</p>
-    <p>Guidances authentiques pour tes vraies questions</p>
+    <p>$(Encode-Html $data.footer.copyright)</p>
+    <p>$(Encode-Html $data.footer.text)</p>
   </footer>
 </body>
 
 </html>
+"@
+
+Set-Content -LiteralPath $OutputPath -Value $html -Encoding UTF8
+Write-Host "Site généré dans public/index.html"

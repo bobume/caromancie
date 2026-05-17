@@ -5,6 +5,7 @@ param(
 $Root = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 $DataPath = Join-Path $Root "data\site.json"
 $BuildScript = Join-Path $Root "scripts\build-site.ps1"
+$PublishScript = Join-Path $Root "scripts\publish.sh"
 
 function ConvertTo-JsonString {
   param([string]$Value)
@@ -108,80 +109,59 @@ function Resolve-LocalPath {
   return $fullPath
 }
 
-function Invoke-Git {
-  param([string[]]$Arguments)
+function Get-GitBashPath {
+  $candidates = @(
+    "C:\Program Files\Git\bin\bash.exe",
+    "C:\Program Files\Git\usr\bin\bash.exe",
+    "C:\Program Files (x86)\Git\bin\bash.exe",
+    "bash"
+  )
 
-  Push-Location $Root
-  try {
-    $output = & git @Arguments 2>&1 | Out-String
-    return @{
-      ExitCode = $LASTEXITCODE
-      Output = $output.Trim()
+  foreach ($candidate in $candidates) {
+    if ($candidate -eq "bash") {
+      $command = Get-Command "bash" -ErrorAction SilentlyContinue
+      if ($null -ne $command) {
+        return $command.Source
+      }
     }
-  }
-  finally {
-    Pop-Location
-  }
-}
-
-function Invoke-GitPush {
-  $push = Invoke-Git -Arguments @("push")
-  if ($push.ExitCode -ne 0) {
-    $branch = Invoke-Git -Arguments @("rev-parse", "--abbrev-ref", "HEAD")
-    if ($branch.ExitCode -eq 0 -and -not [string]::IsNullOrWhiteSpace($branch.Output)) {
-      $push = Invoke-Git -Arguments @("push", "--set-upstream", "origin", $branch.Output.Trim())
+    elseif (Test-Path -LiteralPath $candidate -PathType Leaf) {
+      return $candidate
     }
   }
 
-  return $push
+  return $null
 }
 
 function Send-PublishResult {
   param([System.Net.HttpListenerResponse]$Response)
 
-  $status = Invoke-Git -Arguments @("status", "--porcelain")
-  if ($status.ExitCode -ne 0) {
-    $message = ConvertTo-JsonString "Git n'a pas pu lire l'etat du projet. $($status.Output)"
+  $bashPath = Get-GitBashPath
+  if ($null -eq $bashPath) {
+    Send-Text $Response 500 '{"ok":false,"message":"Git Bash est introuvable. Ouvre Git Bash et lance scripts/publish.sh."}' "application/json; charset=utf-8"
+    return
+  }
+
+  if (-not (Test-Path -LiteralPath $PublishScript -PathType Leaf)) {
+    Send-Text $Response 500 '{"ok":false,"message":"Le script scripts/publish.sh est introuvable."}' "application/json; charset=utf-8"
+    return
+  }
+
+  Push-Location $Root
+  try {
+    $output = & $bashPath $PublishScript 2>&1 | Out-String
+    $exitCode = $LASTEXITCODE
+  }
+  finally {
+    Pop-Location
+  }
+
+  if ($exitCode -ne 0) {
+    $message = ConvertTo-JsonString "L'envoi vers GitHub a echoue. $output"
     Send-Text $Response 500 "{""ok"":false,""message"":""$message""}" "application/json; charset=utf-8"
     return
   }
 
-  if ([string]::IsNullOrWhiteSpace($status.Output)) {
-    $push = Invoke-GitPush
-    if ($push.ExitCode -ne 0) {
-      $message = ConvertTo-JsonString "Aucun fichier a committer, mais l'envoi vers GitHub a echoue. $($push.Output)"
-      Send-Text $Response 500 "{""ok"":false,""message"":""$message""}" "application/json; charset=utf-8"
-      return
-    }
-
-    Send-Text $Response 200 '{"ok":true,"message":"Tout est deja en ligne."}' "application/json; charset=utf-8"
-    return
-  }
-
-  $add = Invoke-Git -Arguments @("add", "-A")
-  if ($add.ExitCode -ne 0) {
-    $message = ConvertTo-JsonString "Git n'a pas pu preparer les fichiers. $($add.Output)"
-    Send-Text $Response 500 "{""ok"":false,""message"":""$message""}" "application/json; charset=utf-8"
-    return
-  }
-
-  $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm"
-  $commit = Invoke-Git -Arguments @("commit", "-m", "Mise a jour du site - $timestamp")
-  if ($commit.ExitCode -ne 0) {
-    $message = ConvertTo-JsonString "Git n'a pas pu creer le commit. $($commit.Output)"
-    Send-Text $Response 500 "{""ok"":false,""message"":""$message""}" "application/json; charset=utf-8"
-    return
-  }
-
-  $push = Invoke-GitPush
-
-  if ($push.ExitCode -ne 0) {
-    $message = ConvertTo-JsonString "Le commit est cree, mais l'envoi vers GitHub a echoue. $($push.Output)"
-    Send-Text $Response 500 "{""ok"":false,""message"":""$message""}" "application/json; charset=utf-8"
-    return
-  }
-
-  Send-Text $Response 200 '{"ok":true,"message":"Mis en ligne. Cloudflare Pages va publier le site."}' "application/json; charset=utf-8"
+  Send-Text $Response 200 '{"ok":true,"message":"Envoye vers GitHub. Verifie ensuite GitHub Actions / Cloudflare Pages."}' "application/json; charset=utf-8"
 }
 
 & $BuildScript -Root $Root

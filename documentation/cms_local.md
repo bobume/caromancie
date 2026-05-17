@@ -32,10 +32,10 @@ Retourne dans la fenêtre noire et appuie sur `Ctrl + C`.
 ## Important
 
 Le mini-CMS est local. Il sert à préparer les fichiers sur ton ordinateur.
-Le bouton `Mettre en ligne` lance ensuite le workflow habituel pour toi :
+Le bouton `Mettre en ligne` lance ensuite le workflow habituel pour toi avec Git Bash :
 
 ```text
 Git commit -> Git push -> GitHub -> Cloudflare Pages
 ```
 
-Après le clic, Cloudflare Pages peut prendre un petit moment avant d'afficher la nouvelle version du site.
+Après le clic, les fichiers sont envoyés vers GitHub. Cloudflare Pages publie ensuite le site via GitHub Actions, ce qui peut prendre un petit moment.

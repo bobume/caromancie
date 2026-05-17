@@ -27,6 +27,7 @@ body {
 
 button,
 input,
+select,
 textarea {
   font: inherit;
 }
@@ -206,6 +207,7 @@ textarea {
 }
 
 .field input,
+.field select,
 .field textarea {
   width: 100%;
   border: 1px solid var(--line);
@@ -251,6 +253,152 @@ textarea {
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
+}
+
+.template-picker {
+  display: grid;
+  gap: 0.8rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.module-picker {
+  display: grid;
+  gap: 0.8rem;
+  padding: 1rem;
+  border: 1px solid #d8e5dc;
+  border-radius: 8px;
+  background: var(--sage-soft);
+}
+
+.template-picker h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.module-picker h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.template-grid,
+.module-grid {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.module-grid {
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+.template-option,
+.module-option {
+  display: grid;
+  gap: 0.25rem;
+  text-align: left;
+  padding: 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-soft);
+  color: var(--ink);
+  cursor: pointer;
+  transition: border-color 0.16s ease, transform 0.16s ease, background 0.16s ease;
+}
+
+.template-option:hover,
+.module-option:hover {
+  background: var(--sage-soft);
+  border-color: #cddbd1;
+  transform: translateY(-1px);
+}
+
+.module-option:hover {
+  background: #fff;
+}
+
+.template-option span,
+.module-option span {
+  font-weight: 800;
+}
+
+.template-option small,
+.module-option small,
+.empty-state {
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.empty-state {
+  margin: 0;
+  padding: 1rem;
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.page-group {
+  background: #fff;
+}
+
+.nested-group {
+  display: grid;
+  gap: 0.8rem;
+  padding: 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-soft);
+}
+
+.nested-group h4 {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.block-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.module-section {
+  background: #fff;
+}
+
+.compact-field {
+  max-width: 220px;
+}
+
+.block-action-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.35;
+}
+
+.cms-version-note {
+  margin: 0;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid #d8e5dc;
+  border-radius: 8px;
+  background: var(--sage-soft);
+  color: var(--sage);
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.image-preview {
+  width: 100%;
+  max-height: 260px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  display: block;
+}
+
+.compact-state {
+  padding: 0.7rem;
 }
 
 .preview-panel {

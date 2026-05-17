@@ -200,3 +200,34 @@ Les commandes et scripts doivent être compatibles Git Bash.
 Ne jamais transformer un petit besoin simple en système complexe.
 
 Le projet doit rester agréable, léger et motivant à développer.
+
+---
+
+# Cache navigateur / assets
+
+Quand tu modifies un fichier CSS ou JavaScript reference par une page HTML, toujours bumper la reference dans le HTML concerne.
+
+Exemple :
+- passer de `/admin/admin.js?v=1` a `/admin/admin.js?v=2`,
+- ou ajouter un parametre `?v=nom-du-changement` si la reference n'en a pas encore.
+
+Cela concerne notamment :
+- `admin/index.html`,
+- `public/index.html`,
+- tout autre fichier HTML qui charge du CSS ou du JavaScript.
+
+Objectif : eviter que le navigateur garde une ancienne version en cache et donne l'impression que la correction ne fonctionne pas.
+
+---
+
+# Note Windows / Node.js
+
+Sous Windows, ne pas essayer d'utiliser Node.js pour verifier le CMS, sauf demande explicite.
+
+Node n'est pas requis pour utiliser ce projet : le CMS local fonctionne avec les scripts PowerShell existants et le JavaScript est execute par le navigateur.
+
+Pour verifier le CMS, privilegier :
+- le lancement du serveur local,
+- l'appel a `/api/site`,
+- le build avec `scripts/build-site.ps1`,
+- un test manuel dans le navigateur.

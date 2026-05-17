@@ -59,6 +59,9 @@ function Send-File {
 
   $Response.StatusCode = 200
   $Response.ContentType = if ($contentTypes.ContainsKey($extension)) { $contentTypes[$extension] } else { "application/octet-stream" }
+  $Response.Headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+  $Response.Headers["Pragma"] = "no-cache"
+  $Response.Headers["Expires"] = "0"
 
   $stream = [System.IO.File]::OpenRead($Path)
   try {
@@ -74,10 +77,96 @@ function Send-File {
   }
 }
 
+function Get-SafeImageFileName {
+  param([string]$FileName)
+
+  $baseName = [System.IO.Path]::GetFileNameWithoutExtension($FileName)
+  $extension = [System.IO.Path]::GetExtension($FileName).ToLowerInvariant()
+  $allowedExtensions = @(".jpg", ".jpeg", ".png", ".webp", ".gif")
+
+  if (-not $allowedExtensions.Contains($extension)) {
+    return $null
+  }
+
+  $safeBase = ($baseName.ToLowerInvariant() -replace '[^a-z0-9]+', '-').Trim('-')
+  if ([string]::IsNullOrWhiteSpace($safeBase)) {
+    $safeBase = "image"
+  }
+
+  return "$safeBase-$(Get-Date -Format 'yyyyMMddHHmmss')$extension"
+}
+
+function Send-ImageUploadResult {
+  param(
+    [System.Net.HttpListenerRequest]$Request,
+    [System.Net.HttpListenerResponse]$Response
+  )
+
+  if ($Request.ContentType -notmatch 'boundary=(.+)$') {
+    Send-Text $Response 400 '{"ok":false,"message":"Image illisible : formulaire incomplet."}' "application/json; charset=utf-8"
+    return
+  }
+
+  $boundary = $Matches[1].Trim('"')
+  $bytes = New-Object byte[] $Request.ContentLength64
+  $offset = 0
+  while ($offset -lt $bytes.Length) {
+    $read = $Request.InputStream.Read($bytes, $offset, $bytes.Length - $offset)
+    if ($read -le 0) { break }
+    $offset += $read
+  }
+
+  $latin1 = [System.Text.Encoding]::GetEncoding("iso-8859-1")
+  $body = $latin1.GetString($bytes)
+  $fileNameMatch = [regex]::Match($body, 'filename\*?=(?:"([^"]+)"|([^;\r\n]+))')
+  if (-not $fileNameMatch.Success) {
+    Send-Text $Response 400 '{"ok":false,"message":"Aucun fichier image recu."}' "application/json; charset=utf-8"
+    return
+  }
+
+  $originalFileName = if ($fileNameMatch.Groups[1].Success) { $fileNameMatch.Groups[1].Value } else { $fileNameMatch.Groups[2].Value }
+  if ($originalFileName.StartsWith("utf-8''", [System.StringComparison]::OrdinalIgnoreCase)) {
+    $originalFileName = [System.Uri]::UnescapeDataString($originalFileName.Substring(7))
+  }
+
+  $safeFileName = Get-SafeImageFileName $originalFileName.Trim('"')
+  if ($null -eq $safeFileName) {
+    Send-Text $Response 400 '{"ok":false,"message":"Format image accepte : jpg, png, webp ou gif."}' "application/json; charset=utf-8"
+    return
+  }
+
+  $headerEnd = $body.IndexOf("`r`n`r`n")
+  if ($headerEnd -lt 0) {
+    Send-Text $Response 400 '{"ok":false,"message":"Image illisible."}' "application/json; charset=utf-8"
+    return
+  }
+
+  $contentStart = $headerEnd + 4
+  $contentEnd = $body.IndexOf("`r`n--$boundary", $contentStart)
+  if ($contentEnd -le $contentStart) {
+    Send-Text $Response 400 '{"ok":false,"message":"Image vide ou incomplete."}' "application/json; charset=utf-8"
+    return
+  }
+
+  $imageBytes = New-Object byte[] ($contentEnd - $contentStart)
+  [Array]::Copy($bytes, $contentStart, $imageBytes, 0, $imageBytes.Length)
+
+  $imagesPath = Join-Path (Join-Path $Root "public") "images"
+  if (-not (Test-Path -LiteralPath $imagesPath -PathType Container)) {
+    New-Item -ItemType Directory -Path $imagesPath | Out-Null
+  }
+
+  $targetPath = Join-Path $imagesPath $safeFileName
+  [System.IO.File]::WriteAllBytes($targetPath, $imageBytes)
+
+  $sitePath = "images/$safeFileName"
+  Send-Text $Response 200 "{""ok"":true,""path"":""$sitePath""}" "application/json; charset=utf-8"
+}
+
 function Resolve-LocalPath {
   param([string]$UrlPath)
 
-  if ($UrlPath -eq "/" -or $UrlPath -eq "/admin") {
+  if ($UrlPath -eq "/" -or $UrlPath -eq "/admin" -or $UrlPath -eq "/admin/") {
     return Join-Path $Root "admin\index.html"
   }
 
@@ -89,6 +178,15 @@ function Resolve-LocalPath {
   $firstSegment = $cleanPath.Split("\")[0]
 
   if ($firstSegment -eq "images") {
+    $fullPath = [System.IO.Path]::GetFullPath((Join-Path (Join-Path $Root "public") $cleanPath))
+    if (-not $fullPath.StartsWith((Join-Path $Root "public"), [System.StringComparison]::OrdinalIgnoreCase)) {
+      return $null
+    }
+
+    return $fullPath
+  }
+
+  if ($cleanPath -notlike "*\*" -and [System.IO.Path]::GetExtension($cleanPath).ToLowerInvariant() -eq ".html") {
     $fullPath = [System.IO.Path]::GetFullPath((Join-Path (Join-Path $Root "public") $cleanPath))
     if (-not $fullPath.StartsWith((Join-Path $Root "public"), [System.StringComparison]::OrdinalIgnoreCase)) {
       return $null
@@ -197,6 +295,11 @@ while ($listener.IsListening) {
       & $BuildScript -Root $Root
 
       Send-Text $response 200 '{"ok":true}' "application/json; charset=utf-8"
+      continue
+    }
+
+    if ($request.HttpMethod -eq "POST" -and $request.Url.AbsolutePath -eq "/api/images") {
+      Send-ImageUploadResult $request $response
       continue
     }
 

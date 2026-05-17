@@ -1,30 +1,54 @@
-# Caromancie — génération d'images pour le bandeau
+# Caromancie
 
-Ce dépôt contient un script pour générer des variantes optimisées (JPG/WebP) de l'image `public/images/hero_caromancie.png` utilisées par le bandeau.
+Site statique simple pour caromancie.be, avec un petit CMS local.
 
-Prérequis
-- Node.js (recommandé >= 16)
+## Principe
 
-Installation
+Le projet reste volontairement leger :
+- HTML,
+- CSS,
+- JavaScript execute par le navigateur,
+- scripts PowerShell pour le CMS local et le build,
+- pas de Node.js requis.
+
+## Lancer le CMS local
+
+Sous Windows, utiliser le raccourci :
 
 ```powershell
-cd 'C:/Users/Christophe/Desktop/caromancie'
-npm install
+.\lancer-cms.bat
 ```
 
-Générer les images
+Ou directement :
 
 ```powershell
-npm run images
+powershell -ExecutionPolicy Bypass -File .\scripts\cms-server.ps1
 ```
 
-Ce script produit `public/images/hero-480.jpg|webp`, `hero-800.*`, `hero-1200.*`, `hero-1600.*`.
+Puis ouvrir :
 
-Déploiement Cloudflare Pages
+```text
+http://localhost:4321/admin/index.html
+```
 
-- Poussez le repo sur GitHub.
-- Dans Cloudflare Pages: Build command = `npm run build`, Publish directory = `public`.
+## Generer le site public
 
-Notes
-- Le fichier source `public/images/hero_caromancie.png` reste commité. Les images générées sont gitignored.
-- Si tu préfères Python, le script `scripts/resize_hero_images.py` existe aussi (nécessite Pillow).
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\build-site.ps1
+```
+
+Le site genere se trouve dans `public/`.
+
+## Images
+
+Le fichier source principal est `public/images/hero_caromancie.png`.
+
+Pour generer des variantes optimisees, utiliser les scripts existants :
+- `scripts/resize_hero_images.py` si Python + Pillow est disponible,
+- `scripts/make_hero_horizontal.ps1` si ImageMagick est installe.
+
+## Deploiement Cloudflare Pages
+
+- Pousser le repo sur GitHub.
+- Dans Cloudflare Pages, utiliser `public` comme dossier de publication.
+- Aucun build Node/npm n'est necessaire pour ce projet.

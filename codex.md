@@ -231,3 +231,57 @@ Pour verifier le CMS, privilegier :
 - l'appel a `/api/site`,
 - le build avec `scripts/build-site.ps1`,
 - un test manuel dans le navigateur.
+
+
+---
+
+# Collaboration Windows / Mac
+
+Le projet est utilisé par deux personnes :
+- Carole sur Windows 10,
+- Arnaud sur Mac mini.
+
+Toujours éviter les chemins absolus propres à une machine.
+
+Ne jamais écrire dans le code :
+- `C:\Users\...`
+- `/Users/arnaud/...`
+- `/home/...`
+
+Préférer toujours des chemins relatifs au projet, par exemple :
+- `public/images/...`
+- `public/uploads/...`
+- `scripts/...`
+- `admin/...`
+
+Avant d’ajouter ou modifier un script, vérifier :
+- s’il doit fonctionner uniquement sur Windows,
+- uniquement sur Mac,
+- ou sur GitHub Actions.
+
+Si un script est spécifique Windows, le placer dans :
+- `outils/windows/`
+
+Si un script est spécifique Mac, le placer dans :
+- `outils/mac/`
+
+Si un script doit être réutilisable partout ou par GitHub Actions, le placer dans :
+- `scripts/`
+
+Pour les automatisations GitHub Actions :
+- elles doivent fonctionner sous Linux GitHub Actions,
+- ne jamais dépendre de PowerShell Windows sauf demande explicite,
+- ne jamais dépendre d’un chemin local d’ordinateur.
+
+Avant de modifier des fichiers importants :
+1. faire `git status`,
+2. vérifier que le dossier de travail est propre,
+3. éviter de mélanger plusieurs grosses modifications dans un seul commit.
+
+Quand Arnaud ou Carole commence une session :
+1. faire d’abord `git pull`,
+2. ensuite seulement modifier le projet,
+3. puis faire commit + push.
+
+Objectif :
+éviter les conflits, les scripts cassés selon la machine, et les dépendances invisibles à un ordinateur précis.

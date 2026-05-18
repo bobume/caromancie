@@ -52,3 +52,11 @@ Pour generer des variantes optimisees, utiliser les scripts existants :
 - Pousser le repo sur GitHub.
 - Dans Cloudflare Pages, utiliser `public` comme dossier de publication.
 - Aucun build Node/npm n'est necessaire pour ce projet.
+
+## Déposer des images pour le site
+
+Carole peut simplement déposer ses images dans `public/images/`.
+Lors d'un push, une action GitHub va automatiquement générer des versions WebP optimisées
+dans `public/images/mobile/` (max 480px) et `public/images/desktop/` (max 1080px).
+Les images originales ne sont jamais écrasées.
+

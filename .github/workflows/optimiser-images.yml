@@ -40,11 +40,14 @@ jobs:
               - '!public/images/mobile/**'
               - '!public/images/desktop/**'
 
-      - name: Run image optimizer for changed files
-        if: steps.filter.outputs.images == 'true'
+      - name: Run image optimizer
         run: |
-          printf "%s" "${{ steps.filter.outputs.images_files }}" > /tmp/changed_files.txt
-          python scripts/optimiser_images.py --files "$(cat /tmp/changed_files.txt)"
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            python scripts/optimiser_images.py
+          elif [[ "${{ steps.filter.outputs.images }}" == "true" ]]; then
+            printf "%s" "${{ steps.filter.outputs.images_files }}" > /tmp/changed_files.txt
+            python scripts/optimiser_images.py --files "$(cat /tmp/changed_files.txt)"
+          fi
 
       - name: Commit generated images
         run: |

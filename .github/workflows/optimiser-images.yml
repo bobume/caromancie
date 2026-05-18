@@ -7,6 +7,7 @@ on:
       - 'scripts/optimiser_images.py'
       - 'requirements.txt'
       - '.github/workflows/optimiser-images.yml'
+  workflow_dispatch:
 
 jobs:
   optimize:

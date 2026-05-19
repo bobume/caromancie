@@ -214,6 +214,53 @@
       .page-titre h1 { font-size: 1.5rem; }
       header .container { flex-direction: column; gap: 0.6rem; align-items: flex-start; }
     }
+
+    /* rappel synchro */
+    #rappel-synchro { display: none; background: #fffbea; border-bottom: 1px solid #f5e68a; }
+    .rappel-inner {
+      max-width: 780px; margin: 0 auto; padding: 0.65rem 1.5rem;
+      display: flex; align-items: center; flex-wrap: wrap; gap: 0.6rem;
+    }
+    .rappel-texte { font-size: 0.87rem; color: #6b5900; flex: 1; min-width: 160px; }
+    .rappel-inner code {
+      background: #fef3c7; color: #78350f;
+      padding: 0.15rem 0.5rem; border-radius: 4px;
+      font-size: 0.83em; font-family: 'Courier New', monospace; white-space: nowrap;
+    }
+    .btn-copier {
+      background: #f59e0b; color: #fff; border: none; border-radius: 6px;
+      padding: 0.28rem 0.75rem; font-size: 0.82rem; cursor: pointer; font-weight: 600;
+    }
+    .btn-copier:hover { background: #d97706; }
+    .btn-fermer-rappel {
+      background: none; border: none; color: #92400e;
+      font-size: 1.2rem; cursor: pointer; padding: 0 0.2rem; line-height: 1;
+    }
+    .btn-fermer-rappel:hover { color: #5c2900; }
+
+    /* messages importants */
+    #messages-importants { padding: 0 1.5rem 1.2rem; max-width: 780px; margin: 0 auto; }
+    .message-card {
+      background: #fff; border-left: 3px solid #71459a;
+      border-radius: 0 8px 8px 0; padding: 0.75rem 1rem;
+      margin-bottom: 0.55rem; display: flex; align-items: flex-start; gap: 0.75rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+    .message-auteur {
+      font-size: 0.76rem; font-weight: 700; color: #fff;
+      background: #71459a; border-radius: 10px; padding: 0.1rem 0.6rem;
+      white-space: nowrap; flex-shrink: 0; margin-top: 0.15rem;
+    }
+    .message-texte { flex: 1; font-size: 0.91rem; color: #432a4f; line-height: 1.5; }
+    .btn-lire {
+      background: none; border: 1px solid #c9a8e0; color: #71459a;
+      border-radius: 6px; padding: 0.2rem 0.6rem; font-size: 0.8rem;
+      cursor: pointer; white-space: nowrap; flex-shrink: 0;
+    }
+    .btn-lire:hover { background: #f2e9f6; }
+
+    /* derniere entree */
+    .derniere-entree { font-size: 0.82rem; color: #b08ad4; margin-top: 0.35rem; font-style: italic; }
   </style>
 </head>
 <body>
@@ -225,10 +272,15 @@
     </div>
   </header>
 
+  <div id="rappel-synchro"></div>
+
   <div class="page-titre">
     <h1>Journal du projet</h1>
     <p>Suivi collaboratif Arnaud &amp; Carole</p>
+    <p id="derniere-entree" class="derniere-entree"></p>
   </div>
+
+  <div id="messages-importants"></div>
 
   <div class="menu-mois" id="menu-mois"></div>
 
@@ -242,6 +294,6 @@
     Caromancie &mdash; usage interne
   </footer>
 
-  <script src="journal.js?v=1"></script>
+  <script src="journal.js?v=2"></script>
 </body>
 </html>

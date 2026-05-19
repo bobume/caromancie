@@ -1,0 +1,7 @@
+[
+  {
+    "id": "msg-001",
+    "auteur": "Arnaud",
+    "texte": "Avant de commencer : lance le script de verification de synchro. Windows : outils\\windows\\verifier-synchro.bat | Mac : bash outils/mac/verifier-synchro.sh"
+  }
+]

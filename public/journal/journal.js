@@ -43,6 +43,7 @@ function chargerJournal(mois) {
     })
     .then(function(md) {
       contenu.innerHTML = markdownVersHTML(md);
+      mettreAJourDerniereEntree(md);
     })
     .catch(function() {
       contenu.innerHTML = '<p class="absent">Ce mois n\'a pas encore de journal. Il sera ajout&eacute; bient&ocirc;t.</p>';
@@ -133,6 +134,115 @@ function construireMenu(actif) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+  afficherRappelSynchro();
+  chargerMessages();
   var actif = moisActif();
   construireMenu(actif);
 });
+
+function afficherRappelSynchro() {
+  if (sessionStorage.getItem('synchro_vu')) return;
+  var estWindows = navigator.userAgent.toLowerCase().indexOf('windows') !== -1;
+  var commande = estWindows ? 'outils\\windows\\verifier-synchro.bat' : 'bash outils/mac/verifier-synchro.sh';
+  var label = estWindows ? 'Windows' : 'Mac';
+  var el = document.getElementById('rappel-synchro');
+  el.innerHTML =
+    '<div class="rappel-inner">' +
+    '<span class="rappel-texte">Debut de session (' + label + ') : verifie ta synchro avant de travailler &rarr;</span>' +
+    '<code id="cmd-synchro">' + commande + '</code>' +
+    '<button class="btn-copier" onclick="copierCommande()">Copier</button>' +
+    '<button class="btn-fermer-rappel" onclick="fermerRappel()" title="Fermer">&times;</button>' +
+    '</div>';
+  el.style.display = 'block';
+}
+
+function copierCommande() {
+  var cmd = document.getElementById('cmd-synchro').textContent;
+  var btn = document.querySelector('.btn-copier');
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(cmd).then(function() {
+      btn.textContent = 'Copie !';
+      setTimeout(function() { btn.textContent = 'Copier'; }, 2000);
+    });
+  } else {
+    var el = document.createElement('textarea');
+    el.value = cmd;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    btn.textContent = 'Copie !';
+    setTimeout(function() { btn.textContent = 'Copier'; }, 2000);
+  }
+}
+
+function fermerRappel() {
+  document.getElementById('rappel-synchro').style.display = 'none';
+  sessionStorage.setItem('synchro_vu', '1');
+}
+
+function chargerMessages() {
+  fetch('data/messages.json?v=1')
+    .then(function(r) { return r.ok ? r.json() : []; })
+    .then(function(messages) {
+      var lus = JSON.parse(localStorage.getItem('journal_messages_lus') || '[]');
+      var visibles = messages.filter(function(m) { return lus.indexOf(m.id) === -1; });
+      if (visibles.length === 0) return;
+      var container = document.getElementById('messages-importants');
+      container.innerHTML = visibles.map(function(m) {
+        return '<div class="message-card" id="msg-' + m.id + '">' +
+          '<span class="message-auteur">' + echapper(m.auteur) + '</span>' +
+          '<span class="message-texte">' + echapper(m.texte) + '</span>' +
+          '<button class="btn-lire" onclick="marquerLu(\'' + m.id + '\')">Lu &#10003;</button>' +
+          '</div>';
+      }).join('');
+    })
+    .catch(function() {});
+}
+
+function marquerLu(id) {
+  var lus = JSON.parse(localStorage.getItem('journal_messages_lus') || '[]');
+  lus.push(id);
+  localStorage.setItem('journal_messages_lus', JSON.stringify(lus));
+  var el = document.getElementById('msg-' + id);
+  if (el) el.remove();
+}
+
+function mettreAJourDerniereEntree(md) {
+  var lignes = md.split('\n');
+  var derniere = null;
+  lignes.forEach(function(ligne) {
+    if (ligne.startsWith('## ')) {
+      var titre = ligne.slice(3);
+      var parties = titre.split(' — ');
+      if (parties.length >= 2) {
+        derniere = { date: parties[0].trim(), auteur: parties[1].trim() };
+      }
+    }
+  });
+  if (!derniere) return;
+  var el = document.getElementById('derniere-entree');
+  if (el) el.textContent = 'Derniere entree : ' + derniere.auteur + ', ' + dateRelative(derniere.date);
+}
+
+function dateRelative(dateStr) {
+  var moisFR = {
+    'janvier':0,'fevrier':1,'mars':2,'avril':3,'mai':4,'juin':5,
+    'juillet':6,'aout':7,'septembre':8,'octobre':9,'novembre':10,'decembre':11
+  };
+  var parts = dateStr.toLowerCase().replace(/\./g, '').split(' ');
+  if (parts.length < 3) return dateStr;
+  var d = parseInt(parts[0]);
+  var m = moisFR[parts[1]];
+  var y = parseInt(parts[2]);
+  if (isNaN(d) || m === undefined || isNaN(y)) return dateStr;
+  var date = new Date(y, m, d);
+  var now = new Date();
+  var nowDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  var diff = Math.round((nowDate - date) / 86400000);
+  if (diff === 0) return "aujourd'hui";
+  if (diff === 1) return 'hier';
+  if (diff < 7) return 'il y a ' + diff + ' jours';
+  if (diff < 14) return 'il y a 1 semaine';
+  return 'il y a ' + Math.round(diff / 7) + ' semaines';
+}

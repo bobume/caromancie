@@ -42,11 +42,18 @@ jobs:
 
       - name: Run image optimizer
         run: |
+          echo "Event: ${{ github.event_name }}"
+          echo "Filter images: ${{ steps.filter.outputs.images }}"
+          echo "Filter files: ${{ steps.filter.outputs.images_files }}"
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "→ Manual trigger: optimizing ALL images"
             python scripts/optimiser_images.py
           elif [[ "${{ steps.filter.outputs.images }}" == "true" ]]; then
+            echo "→ Push detected: optimizing CHANGED images"
             printf "%s" "${{ steps.filter.outputs.images_files }}" > /tmp/changed_files.txt
             python scripts/optimiser_images.py --files "$(cat /tmp/changed_files.txt)"
+          else
+            echo "→ No images detected"
           fi
 
       - name: Commit generated images

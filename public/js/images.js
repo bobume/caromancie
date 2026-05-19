@@ -12,12 +12,10 @@ document.addEventListener('DOMContentLoaded', () => {
     return dir + subdir + '/' + stem + '.webp';
   }
 
-  // Transform <img> to <picture>
   document.querySelectorAll('img[src*="images/"]').forEach(img => {
     if (img.hasAttribute('data-no-webp')) return;
 
     const originalSrc = img.getAttribute('src');
-    const isMobile = mediaQuery.matches;
     const mobileWebp = getWebpPath(originalSrc, true);
     const desktopWebp = getWebpPath(originalSrc, false);
 
@@ -35,21 +33,18 @@ document.addEventListener('DOMContentLoaded', () => {
     sourceMobile.setAttribute('type', 'image/webp');
     picture.appendChild(sourceMobile);
 
-    // Copy the original img and update its src to be the PNG fallback
     const newImg = img.cloneNode(true);
-    newImg.removeAttribute('data-no-webp');
     picture.appendChild(newImg);
 
     img.replaceWith(picture);
   });
 
-  // Handle background images on .hero-bg
   const heroBg = document.querySelector('.hero-bg');
   if (heroBg && heroBg.hasAttribute('data-src')) {
     const originalSrc = heroBg.getAttribute('data-src');
 
     function updateHeroBg() {
-      const isMobile = window.matchMedia('(max-width: 768px)').matches;
+      const isMobile = mediaQuery.matches;
       const webpPath = getWebpPath(originalSrc, isMobile);
       heroBg.style.backgroundImage = `url('${webpPath}')`;
     }

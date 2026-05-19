@@ -1,7 +1,13 @@
 #!/usr/bin/env python3
 from pathlib import Path
 from PIL import Image, UnidentifiedImageError
+import csv
 import logging
+
+
+def parse_file_list(files_arg: str) -> list[Path]:
+    rows = csv.reader(files_arg.splitlines())
+    return [Path(item.strip()) for row in rows for item in row if item.strip()]
 
 
 def process_image(src_path: Path, dest_dir: Path, target_width: int) -> bool:
@@ -49,7 +55,7 @@ def main() -> None:
     import argparse
 
     parser = argparse.ArgumentParser(description="Optimize images to WebP mobile/desktop variants")
-    parser.add_argument("--files", help="Optional newline-separated list of files to process", default=None)
+    parser.add_argument("--files", help="Optional CSV or newline-separated list of files to process", default=None)
     args = parser.parse_args()
 
     exts = {".jpg", ".jpeg", ".png", ".gif", ".tif", ".tiff", ".bmp"}
@@ -57,12 +63,7 @@ def main() -> None:
 
     targets = []
     if args.files:
-        for line in args.files.splitlines():
-            line = line.strip()
-            if not line:
-                continue
-            p = repo_root / line
-            targets.append(p)
+        targets = [repo_root / path for path in parse_file_list(args.files)]
     else:
         targets = list(images_dir.rglob("*"))
 

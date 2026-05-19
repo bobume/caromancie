@@ -261,6 +261,82 @@
 
     /* derniere entree */
     .derniere-entree { font-size: 0.82rem; color: #b08ad4; margin-top: 0.35rem; font-style: italic; }
+
+    /* section Q&A */
+    .qa-section { padding: 2.5rem 0 3rem; border-top: 2px solid #eadff1; }
+    .qa-titre { font-size: 1.2rem; color: #5d347f; font-weight: 800; margin-bottom: 1.2rem; }
+    .qa-btn-nouveau {
+      background: #71459a; color: #fff; border: none; border-radius: 8px;
+      padding: 0.5rem 1.2rem; font-size: 0.9rem; font-weight: 600; cursor: pointer;
+      margin-bottom: 1.2rem; display: block;
+    }
+    .qa-btn-nouveau:hover { background: #5d347f; }
+    .qa-form {
+      background: #faf8fb; border: 1px solid #eadff1; border-radius: 8px;
+      padding: 1rem; margin-bottom: 1.5rem; display: none;
+    }
+    .qa-form.visible { display: block; }
+    .qa-form select, .qa-form textarea {
+      width: 100%; border: 1px solid #eadff1; border-radius: 6px;
+      padding: 0.5rem 0.75rem; font-size: 0.9rem; font-family: inherit;
+      color: #35213f; background: #fff; margin-bottom: 0.6rem;
+    }
+    .qa-form textarea { resize: vertical; min-height: 80px; }
+    .qa-form select:focus, .qa-form textarea:focus { outline: 2px solid #b08ad4; border-color: #b08ad4; }
+    .qa-soumettre {
+      background: #71459a; color: #fff; border: none; border-radius: 6px;
+      padding: 0.45rem 1rem; font-size: 0.9rem; font-weight: 600; cursor: pointer;
+    }
+    .qa-soumettre:hover { background: #5d347f; }
+    .qa-annuler {
+      background: none; border: 1px solid #eadff1; border-radius: 6px;
+      padding: 0.45rem 1rem; font-size: 0.9rem; color: #756a7c; cursor: pointer;
+      margin-left: 0.5rem;
+    }
+    .qa-annuler:hover { background: #f2e9f6; }
+    .qa-liste { display: flex; flex-direction: column; gap: 1rem; }
+    .qa-card {
+      background: #fff; border: 1px solid #eadff1; border-radius: 8px;
+      padding: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .qa-card-question { display: flex; align-items: flex-start; gap: 0.75rem; }
+    .qa-badge {
+      font-size: 0.76rem; font-weight: 700; color: #fff;
+      background: #71459a; border-radius: 10px; padding: 0.1rem 0.6rem;
+      white-space: nowrap; flex-shrink: 0; margin-top: 0.15rem;
+    }
+    .qa-badge.reponse { background: #3a7ab8; }
+    .qa-texte { flex: 1; font-size: 0.92rem; color: #432a4f; line-height: 1.5; }
+    .qa-date { font-size: 0.77rem; color: #b08ad4; margin-top: 0.2rem; }
+    .qa-statut {
+      font-size: 0.72rem; font-weight: 600; border-radius: 10px;
+      padding: 0.1rem 0.55rem; flex-shrink: 0; margin-top: 0.15rem;
+    }
+    .qa-statut.sans-reponse { background: #fef3c7; color: #92400e; }
+    .qa-statut.repondu { background: #d1fae5; color: #065f46; }
+    .qa-reponse-bloc {
+      margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid #eadff1;
+      display: flex; align-items: flex-start; gap: 0.75rem;
+    }
+    .qa-btn-repondre {
+      margin-top: 0.75rem; background: none; border: 1px solid #c9a8e0;
+      color: #71459a; border-radius: 6px; padding: 0.3rem 0.8rem;
+      font-size: 0.82rem; cursor: pointer;
+    }
+    .qa-btn-repondre:hover { background: #f2e9f6; }
+    .qa-form-reponse {
+      margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid #eadff1;
+      display: none;
+    }
+    .qa-form-reponse.visible { display: block; }
+    .qa-form-reponse select, .qa-form-reponse textarea {
+      width: 100%; border: 1px solid #eadff1; border-radius: 6px;
+      padding: 0.45rem 0.7rem; font-size: 0.88rem; font-family: inherit;
+      color: #35213f; background: #fff; margin-bottom: 0.5rem;
+    }
+    .qa-form-reponse textarea { resize: vertical; min-height: 60px; }
+    .qa-form-reponse select:focus, .qa-form-reponse textarea:focus { outline: 2px solid #b08ad4; border-color: #b08ad4; }
+    .qa-vide { color: #756a7c; font-style: italic; font-size: 0.92rem; }
   </style>
 </head>
 <body>
@@ -290,10 +366,28 @@
     </div>
   </div>
 
+  <div class="qa-section">
+    <div class="container">
+      <div class="qa-titre">Questions &amp; Suggestions</div>
+      <button class="qa-btn-nouveau" onclick="toggleFormulaireQuestion()">+ Poser une question</button>
+      <div class="qa-form" id="qa-form-nouveau">
+        <select id="qa-auteur">
+          <option value="">-- Qui pose la question ? --</option>
+          <option value="Carole">Carole</option>
+          <option value="Arnaud">Arnaud</option>
+        </select>
+        <textarea id="qa-texte" placeholder="Ta question ou suggestion..."></textarea>
+        <button class="qa-soumettre" onclick="soumettreQuestion()">Envoyer</button>
+        <button class="qa-annuler" onclick="toggleFormulaireQuestion()">Annuler</button>
+      </div>
+      <div class="qa-liste" id="qa-liste"></div>
+    </div>
+  </div>
+
   <footer>
     Caromancie &mdash; usage interne
   </footer>
 
-  <script src="journal.js?v=2"></script>
+  <script src="journal.js?v=3"></script>
 </body>
 </html>

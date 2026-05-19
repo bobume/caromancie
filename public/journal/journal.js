@@ -136,6 +136,7 @@ function construireMenu(actif) {
 document.addEventListener('DOMContentLoaded', function() {
   afficherRappelSynchro();
   chargerMessages();
+  chargerQuestions();
   var actif = moisActif();
   construireMenu(actif);
 });
@@ -224,6 +225,114 @@ function mettreAJourDerniereEntree(md) {
   var el = document.getElementById('derniere-entree');
   if (el) el.textContent = 'Derniere entree : ' + derniere.auteur + ', ' + dateRelative(derniere.date);
 }
+
+// ---- Section Q&A ----
+
+function chargerQuestions() {
+  var liste = document.getElementById('qa-liste');
+  if (!liste) return;
+  liste.innerHTML = '<p class="qa-vide">Chargement...</p>';
+  fetch('/api/questions')
+    .then(function(r) { return r.ok ? r.json() : []; })
+    .then(function(questions) { afficherQuestions(questions); })
+    .catch(function() {
+      liste.innerHTML = '<p class="qa-vide">Impossible de charger les questions.</p>';
+    });
+}
+
+function afficherQuestions(questions) {
+  var liste = document.getElementById('qa-liste');
+  if (!liste) return;
+  if (!questions.length) {
+    liste.innerHTML = '<p class="qa-vide">Aucune question pour le moment.</p>';
+    return;
+  }
+  liste.innerHTML = questions.map(function(q) {
+    var repondu = !!q.reponse;
+    var html = '<div class="qa-card" id="qa-card-' + q.id + '">';
+    html += '<div class="qa-card-question">';
+    html += '<span class="qa-badge">' + echapper(q.auteur) + '</span>';
+    html += '<div class="qa-texte">' + echapper(q.texte) + '<div class="qa-date">' + formaterDateISO(q.date) + '</div></div>';
+    html += '<span class="qa-statut ' + (repondu ? 'repondu' : 'sans-reponse') + '">' + (repondu ? 'Repondu' : 'En attente') + '</span>';
+    html += '</div>';
+    if (repondu) {
+      html += '<div class="qa-reponse-bloc">';
+      html += '<span class="qa-badge reponse">' + echapper(q.auteur_reponse) + '</span>';
+      html += '<div class="qa-texte">' + echapper(q.reponse) + '<div class="qa-date">' + formaterDateISO(q.date_reponse) + '</div></div>';
+      html += '</div>';
+    } else {
+      html += '<button class="qa-btn-repondre" onclick="toggleFormulaireReponse(\'' + q.id + '\')">Repondre</button>';
+      html += '<div class="qa-form-reponse" id="qa-rep-' + q.id + '">';
+      html += '<select id="qa-rep-auteur-' + q.id + '">';
+      html += '<option value="">-- Qui repond ? --</option>';
+      html += '<option value="Arnaud">Arnaud</option>';
+      html += '<option value="Carole">Carole</option>';
+      html += '</select>';
+      html += '<textarea id="qa-rep-texte-' + q.id + '" placeholder="Ta reponse..."></textarea>';
+      html += '<button class="qa-soumettre" style="font-size:0.85rem;padding:0.35rem 0.85rem" onclick="soumettreReponse(\'' + q.id + '\')">Envoyer</button>';
+      html += '<button class="qa-annuler" style="font-size:0.85rem" onclick="toggleFormulaireReponse(\'' + q.id + '\')">Annuler</button>';
+      html += '</div>';
+    }
+    html += '</div>';
+    return html;
+  }).join('');
+}
+
+function formaterDateISO(iso) {
+  if (!iso) return '';
+  var d = new Date(iso);
+  var jours = ['dim.', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.'];
+  var moisCourt = ['jan.', 'fev.', 'mar.', 'avr.', 'mai', 'juin', 'juil.', 'aout', 'sep.', 'oct.', 'nov.', 'dec.'];
+  var h = d.getHours() < 10 ? '0' + d.getHours() : '' + d.getHours();
+  var min = d.getMinutes() < 10 ? '0' + d.getMinutes() : '' + d.getMinutes();
+  return jours[d.getDay()] + ' ' + d.getDate() + ' ' + moisCourt[d.getMonth()] + ' ' + d.getFullYear() + ' a ' + h + 'h' + min;
+}
+
+function toggleFormulaireQuestion() {
+  document.getElementById('qa-form-nouveau').classList.toggle('visible');
+}
+
+function toggleFormulaireReponse(id) {
+  var form = document.getElementById('qa-rep-' + id);
+  if (form) form.classList.toggle('visible');
+}
+
+function soumettreQuestion() {
+  var auteur = document.getElementById('qa-auteur').value;
+  var texte = document.getElementById('qa-texte').value.trim();
+  if (!auteur) { alert('Dis-nous qui tu es !'); return; }
+  if (!texte) { alert('Ecris ta question d\'abord.'); return; }
+  fetch('/api/questions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ auteur: auteur, texte: texte })
+  })
+    .then(function(r) { if (!r.ok) throw new Error(); return r.json(); })
+    .then(function() {
+      document.getElementById('qa-auteur').value = '';
+      document.getElementById('qa-texte').value = '';
+      toggleFormulaireQuestion();
+      chargerQuestions();
+    })
+    .catch(function() { alert('Erreur lors de l\'envoi. Reessaie.'); });
+}
+
+function soumettreReponse(id) {
+  var auteur = document.getElementById('qa-rep-auteur-' + id).value;
+  var texte = document.getElementById('qa-rep-texte-' + id).value.trim();
+  if (!auteur) { alert('Dis-nous qui repond !'); return; }
+  if (!texte) { alert('Ecris ta reponse d\'abord.'); return; }
+  fetch('/api/questions/' + id, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ auteur: auteur, reponse: texte })
+  })
+    .then(function(r) { if (!r.ok) throw new Error(); return r.json(); })
+    .then(function() { chargerQuestions(); })
+    .catch(function() { alert('Erreur lors de l\'envoi. Reessaie.'); });
+}
+
+// ---- Fin Q&A ----
 
 function dateRelative(dateStr) {
   var moisFR = {

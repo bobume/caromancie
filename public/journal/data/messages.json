@@ -3,5 +3,10 @@
     "id": "msg-001",
     "auteur": "Arnaud",
     "texte": "Avant de commencer : lance le script de verification de synchro. Windows : outils\\windows\\verifier-synchro.bat | Mac : bash outils/mac/verifier-synchro.sh"
+  },
+  {
+    "id": "msg-qa-launch",
+    "auteur": "Arnaud",
+    "texte": "La section Questions & Suggestions est maintenant active ! Tu peux poser des questions ou suggestions en bas du journal, et je peux repondre directement. C'est comme une petite conversation a deux dans le journal."
   }
 ]

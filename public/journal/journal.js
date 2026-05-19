@@ -1,8 +1,9 @@
-// Premier mois du journal — ne pas changer
 var DEBUT = { annee: 2026, mois: 5 };
 
 var NOMS_MOIS = ['', 'Janvier', 'Fevrier', 'Mars', 'Avril', 'Mai', 'Juin',
   'Juillet', 'Aout', 'Septembre', 'Octobre', 'Novembre', 'Decembre'];
+
+var utilisateur = { nom: 'Carole' };
 
 function tousLesMoisDepuisDebut() {
   var liste = [];
@@ -15,7 +16,7 @@ function tousLesMoisDepuisDebut() {
     mois++;
     if (mois > 12) { mois = 1; annee++; }
   }
-  return liste.reverse(); // plus recent en premier
+  return liste.reverse();
 }
 
 var MOIS_COURANT = (function() {
@@ -26,31 +27,33 @@ var MOIS_COURANT = (function() {
 
 function moisActif() {
   var hash = window.location.hash.replace('#', '');
-  if (hash && MOIS_DISPONIBLES.some(function(m) { return m.fichier === hash; })) {
-    return hash;
-  }
-  return MOIS_COURANT;
+  return hash || MOIS_COURANT;
 }
 
 function chargerJournal(mois) {
   var contenu = document.getElementById('journal-contenu');
   contenu.innerHTML = '<p class="chargement">Chargement...</p>';
 
-  fetch('data/' + mois + '.md?v=1')
-    .then(function(r) {
+  Promise.all([
+    fetch('data/' + mois + '.md?v=1').then(function(r) {
       if (!r.ok) throw new Error('introuvable');
       return r.text();
-    })
-    .then(function(md) {
-      contenu.innerHTML = markdownVersHTML(md);
-      mettreAJourDerniereEntree(md);
-    })
-    .catch(function() {
-      contenu.innerHTML = '<p class="absent">Ce mois n\'a pas encore de journal. Il sera ajout&eacute; bient&ocirc;t.</p>';
-    });
+    }),
+    fetch('/api/effaces?mois=' + mois)
+      .then(function(r) { return r.ok ? r.json() : []; })
+      .catch(function() { return []; })
+  ]).then(function(resultats) {
+    var md = resultats[0];
+    var effaces = resultats[1];
+    contenu.innerHTML = markdownVersHTML(md, effaces, mois);
+    mettreAJourDerniereEntree(md);
+  }).catch(function() {
+    contenu.innerHTML = '<p class="absent">Ce mois n\'a pas encore de journal. Il sera ajout&eacute; bient&ocirc;t.</p>';
+  });
 }
 
-function markdownVersHTML(md) {
+function markdownVersHTML(md, effaces, mois) {
+  effaces = effaces || [];
   var lignes = md.split('\n');
   var html = '';
   var dansListe = false;
@@ -67,9 +70,19 @@ function markdownVersHTML(md) {
       html += '<h2><span class="entree-date">' + echapper(partieDate) + '</span>';
       if (partieAuteur) html += ' <span class="entree-auteur">' + echapper(partieAuteur) + '</span>';
       html += '</h2>';
+    } else if (ligne.startsWith('> Carole :')) {
+      if (dansListe) { html += '</ul>'; dansListe = false; }
+      html += '<div class="note-carole">' + inlinesMD(ligne.slice(10).trim()) + '</div>';
     } else if (ligne.startsWith('- ')) {
+      var texte = ligne.slice(2);
+      var h = hashTexte(texte);
+      if (effaces.indexOf(h) !== -1) return;
       if (!dansListe) { html += '<ul>'; dansListe = true; }
-      html += '<li>' + inlinesMD(ligne.slice(2)) + '</li>';
+      var contenu = inlinesMD(texte);
+      if (utilisateur.nom === 'Arnaud') {
+        contenu += ' <button class="btn-effacer" onclick="effacer(\'' + mois + '\',\'' + h + '\')">&#10005;</button>';
+      }
+      html += '<li>' + contenu + '</li>';
     } else if (ligne.trim() === '' || ligne.startsWith('---')) {
       if (dansListe) { html += '</ul>'; dansListe = false; }
       if (ligne.startsWith('---')) html += '<hr>';
@@ -81,6 +94,25 @@ function markdownVersHTML(md) {
 
   if (dansListe) html += '</ul>';
   return html;
+}
+
+function hashTexte(str) {
+  var h = 5381;
+  for (var i = 0; i < str.length; i++) h = ((h << 5) + h) ^ str.charCodeAt(i);
+  return (h >>> 0).toString(36);
+}
+
+function effacer(mois, hash) {
+  if (!confirm('Effacer cette ligne pour tout le monde ?')) return;
+  fetch('/api/effaces', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ mois: mois, hash: hash })
+  }).then(function() {
+    chargerJournal(mois);
+  }).catch(function() {
+    alert('Erreur lors de la suppression. Reessaie.');
+  });
 }
 
 function inlinesMD(texte) {
@@ -127,7 +159,6 @@ function construireMenu(actif) {
     }
     disponibles.forEach(function(m) { ajouterBouton(menu, m, actif); });
 
-    // Si le mois actif n'existe pas, charger le plus recent disponible
     var existe = disponibles.some(function(m) { return m.fichier === actif; });
     chargerJournal(existe ? actif : disponibles[0].fichier);
   });
@@ -137,8 +168,14 @@ document.addEventListener('DOMContentLoaded', function() {
   afficherRappelSynchro();
   chargerMessages();
   chargerQuestions();
-  var actif = moisActif();
-  construireMenu(actif);
+  fetch('/api/whoami')
+    .then(function(r) { return r.ok ? r.json() : { nom: 'Carole' }; })
+    .catch(function() { return { nom: 'Carole' }; })
+    .then(function(u) {
+      utilisateur = u;
+      var actif = moisActif();
+      construireMenu(actif);
+    });
 });
 
 function afficherRappelSynchro() {

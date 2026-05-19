@@ -47,6 +47,18 @@ Scripts utiles:
 - **Windows / CMS**: ne pas utiliser Node.js pour verifier le CMS sous Windows, sauf demande explicite
 - **Sécurité**: pas de suppressions massives, manipulation dangereuse sans avertissement clair
 
+## Images & WebP
+Les images sont servies automatiquement en WebP optimisé (mobile et desktop) grâce à un script JavaScript dans `public/js/images.js`.
+
+**Pour ajouter une image :**
+1. Dépose ton fichier source dans `public/images/` (`.jpg`, `.png`, `.gif`, etc.)
+2. GitHub Actions génère automatiquement les versions WebP (mobile ≤ 480px, desktop ≤ 1080px)
+3. Utilise l'image normalement dans le HTML : `<img src="images/ma-photo.jpg" alt="...">`
+
+**Aucune action supplémentaire requise.** Le script détecte automatiquement et sert la bonne version WebP.
+
+Pour les détails : voir `documentation/images_webp_responsive.md`
+
 ## Journal projet
 Entrées dans `public/journal/data/YYYY-MM.md` (une par mois).
 Quand on dit "lis le journal" : lire le fichier du mois courant, résumer en 2-3 phrases ce qui a été fait et ce qui est en attente, signaler les points "À vérifier" sans réponse.

@@ -26,6 +26,8 @@ Ne jamais ecraser des changements locaux sans accord explicite.
 ## Travail a deux
 Arnaud travaille sur Mac, Carole travaille sur Windows 10.
 
+Sous Windows, preferer Git Bash. Eviter PowerShell quand ce n'est pas necessaire.
+
 Avant de commencer:
 - lancer le script de verification de synchro
 - faire `git pull` si le script indique que GitHub contient des changements plus recents
@@ -42,6 +44,7 @@ Scripts utiles:
 - **Cache navigateur**: quand tu modifies CSS/JS, bump la version dans le HTML (ex: `/admin/admin.js?v=2`)
 - **Chemins**: toujours relatifs (pas de `/Users/arnaud/...` ni `C:\Users\...`)
 - **Scripts**: Windows → `outils/windows/`, Mac → `outils/mac/`, généraux → `scripts/`
+- **Windows / CMS**: ne pas utiliser Node.js pour verifier le CMS sous Windows, sauf demande explicite
 - **Sécurité**: pas de suppressions massives, manipulation dangereuse sans avertissement clair
 
 ## Principe général

@@ -19,7 +19,24 @@ Carole est débutante (VS Code, Git, web dev).
 ## Workflow
 VS Code → Git commit → Git push → GitHub → Cloudflare Pages
 
-Avant de modifier: `git status` (dossier propre), puis à chaque session: `git pull` d’abord.
+Avant de modifier: verifier `git status` pour voir les changements locaux.
+Faire `git pull` avant une session importante, avant un push, ou si le repo a probablement change ailleurs.
+Ne jamais ecraser des changements locaux sans accord explicite.
+
+## Travail a deux
+Arnaud travaille sur Mac, Carole travaille sur Windows 10.
+
+Avant de commencer:
+- lancer le script de verification de synchro
+- faire `git pull` si le script indique que GitHub contient des changements plus recents
+
+Pendant le travail:
+- eviter de modifier les memes fichiers en meme temps
+- si la derniere modification GitHub est tres recente, considerer que l'autre personne travaille peut-etre encore
+
+Scripts utiles:
+- Mac: `outils/mac/verifier-synchro.sh`
+- Windows: `outils/windows/verifier-synchro.bat`
 
 ## Règles pratiques
 - **Cache navigateur**: quand tu modifies CSS/JS, bump la version dans le HTML (ex: `/admin/admin.js?v=2`)

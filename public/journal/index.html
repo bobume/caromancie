@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Journal du projet — Caromancie</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+      background: #f8f5fb;
+      color: #35213f;
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+
+    header {
+      background: rgba(255, 255, 255, 0.94);
+      border-bottom: 1px solid #eadff1;
+      padding: 1.2rem 0;
+      backdrop-filter: blur(14px);
+    }
+
+    .container {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    header .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 1.1rem;
+      color: #71459a;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .logo:hover { color: #5d347f; }
+
+    .badge-prive {
+      font-size: 0.78rem;
+      color: #756a7c;
+      background: #f2e9f6;
+      border: 1px solid #eadff1;
+      border-radius: 20px;
+      padding: 0.2rem 0.7rem;
+    }
+
+    .page-titre {
+      padding: 2.5rem 1.5rem 1.5rem;
+      text-align: center;
+    }
+
+    .page-titre h1 {
+      font-size: 1.9rem;
+      color: #5d347f;
+      font-weight: 800;
+      margin-bottom: 0.4rem;
+    }
+
+    .page-titre p {
+      color: #756a7c;
+      font-size: 0.95rem;
+    }
+
+    .menu-mois {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      padding: 0 1.5rem 2rem;
+    }
+
+    .btn-mois {
+      padding: 0.45rem 1.1rem;
+      border-radius: 20px;
+      border: 1px solid #eadff1;
+      background: #fff;
+      color: #71459a;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+
+    .btn-mois:hover {
+      background: #f2e9f6;
+      border-color: #c9a8e0;
+    }
+
+    .btn-mois.actif {
+      background: #71459a;
+      color: #fff;
+      border-color: #71459a;
+    }
+
+    .journal-corps {
+      background: #fff;
+      border-top: 1px solid #eadff1;
+      border-bottom: 1px solid #eadff1;
+      padding: 2rem 0 3rem;
+    }
+
+    #journal-contenu h1 {
+      font-size: 1.5rem;
+      color: #5d347f;
+      font-weight: 800;
+      margin-bottom: 2rem;
+      padding-bottom: 0.8rem;
+      border-bottom: 2px solid #eadff1;
+    }
+
+    #journal-contenu h2 {
+      display: flex;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 2.2rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .entree-date {
+      font-size: 1.05rem;
+      color: #35213f;
+      font-weight: 700;
+    }
+
+    .entree-auteur {
+      font-size: 0.85rem;
+      color: #fff;
+      background: #71459a;
+      border-radius: 12px;
+      padding: 0.1rem 0.65rem;
+      font-weight: 600;
+    }
+
+    #journal-contenu ul {
+      list-style: none;
+      margin: 0.4rem 0 0.8rem 0;
+    }
+
+    #journal-contenu li {
+      position: relative;
+      padding-left: 1.2rem;
+      margin-bottom: 0.35rem;
+      color: #432a4f;
+      font-size: 0.97rem;
+    }
+
+    #journal-contenu li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.7em;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #b08ad4;
+    }
+
+    #journal-contenu p {
+      color: #432a4f;
+      margin-bottom: 0.6rem;
+      font-size: 0.97rem;
+    }
+
+    #journal-contenu code {
+      background: #f2e9f6;
+      color: #5d347f;
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.88em;
+      font-family: 'Courier New', monospace;
+    }
+
+    #journal-contenu hr {
+      border: none;
+      border-top: 1px solid #eadff1;
+      margin: 1.8rem 0;
+    }
+
+    .chargement {
+      color: #756a7c;
+      font-style: italic;
+      text-align: center;
+      padding: 2rem 0;
+    }
+
+    .absent {
+      text-align: center;
+      color: #756a7c;
+      font-style: italic;
+      padding: 2.5rem 0;
+      background: #faf8fb;
+      border: 1px dashed #eadff1;
+      border-radius: 8px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: #a090aa;
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 600px) {
+      .page-titre h1 { font-size: 1.5rem; }
+      header .container { flex-direction: column; gap: 0.6rem; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="container">
+      <a href="../index.html" class="logo">Caromancie</a>
+      <span class="badge-prive">Journal prive</span>
+    </div>
+  </header>
+
+  <div class="page-titre">
+    <h1>Journal du projet</h1>
+    <p>Suivi collaboratif Arnaud &amp; Carole</p>
+  </div>
+
+  <div class="menu-mois" id="menu-mois"></div>
+
+  <div class="journal-corps">
+    <div class="container">
+      <div id="journal-contenu"></div>
+    </div>
+  </div>
+
+  <footer>
+    Caromancie &mdash; usage interne
+  </footer>
+
+  <script src="journal.js?v=1"></script>
+</body>
+</html>

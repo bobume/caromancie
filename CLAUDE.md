@@ -47,5 +47,9 @@ Scripts utiles:
 - **Windows / CMS**: ne pas utiliser Node.js pour verifier le CMS sous Windows, sauf demande explicite
 - **Sécurité**: pas de suppressions massives, manipulation dangereuse sans avertissement clair
 
+## Journal projet
+Entrées dans `public/journal/data/YYYY-MM.md` (une par mois).
+Quand on dit "lis le journal" : lire le fichier du mois courant, résumer en 2-3 phrases ce qui a été fait et ce qui est en attente, signaler les points "À vérifier" sans réponse.
+
 ## Principe général
 Le meilleur code est souvent le plus simple. Reste humain, créatif, pragmatique.

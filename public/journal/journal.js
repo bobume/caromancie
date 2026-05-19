@@ -3,8 +3,6 @@ var DEBUT = { annee: 2026, mois: 5 };
 var NOMS_MOIS = ['', 'Janvier', 'Fevrier', 'Mars', 'Avril', 'Mai', 'Juin',
   'Juillet', 'Aout', 'Septembre', 'Octobre', 'Novembre', 'Decembre'];
 
-var utilisateur = { nom: 'Carole' };
-
 function tousLesMoisDepuisDebut() {
   var liste = [];
   var now = new Date();
@@ -79,9 +77,7 @@ function markdownVersHTML(md, effaces, mois) {
       if (effaces.indexOf(h) !== -1) return;
       if (!dansListe) { html += '<ul>'; dansListe = true; }
       var contenu = inlinesMD(texte);
-      if (utilisateur.nom === 'Arnaud') {
-        contenu += ' <button class="btn-effacer" onclick="effacer(\'' + mois + '\',\'' + h + '\')">&#10005;</button>';
-      }
+      contenu += ' <button class="btn-effacer" onclick="effacer(\'' + mois + '\',\'' + h + '\')">&#10005;</button>';
       html += '<li>' + contenu + '</li>';
     } else if (ligne.trim() === '' || ligne.startsWith('---')) {
       if (dansListe) { html += '</ul>'; dansListe = false; }
@@ -168,14 +164,7 @@ document.addEventListener('DOMContentLoaded', function() {
   afficherRappelSynchro();
   chargerMessages();
   chargerQuestions();
-  fetch('/api/whoami')
-    .then(function(r) { return r.ok ? r.json() : { nom: 'Carole' }; })
-    .catch(function() { return { nom: 'Carole' }; })
-    .then(function(u) {
-      utilisateur = u;
-      var actif = moisActif();
-      construireMenu(actif);
-    });
+  construireMenu(moisActif());
 });
 
 function afficherRappelSynchro() {

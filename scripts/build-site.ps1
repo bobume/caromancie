@@ -605,7 +605,6 @@ $html = @"
     .hero-bg {
       position: absolute;
       inset: 0;
-      background-image: url('$(Encode-Html $data.hero.image)');
       background-size: cover;
       background-position: center right;
       background-repeat: no-repeat;
@@ -887,7 +886,7 @@ $navigation
 
   <main>
     <section class="hero" aria-label="Bandeau principal">
-      <div class="hero-bg" aria-hidden="true"></div>
+      <div class="hero-bg" aria-hidden="true" data-src="$(Encode-Html $data.hero.image)"></div>
       <div class="hero-content">
         <h2>$(Encode-Html $data.hero.title)</h2>
 $heroParagraphs
@@ -920,6 +919,8 @@ $contactParagraphs
     <p>$(Encode-Html $data.footer.copyright)</p>
     <p>$(Encode-Html $data.footer.text)</p>
   </footer>
+
+  <script src="js/images.js?v=1"></script>
 </body>
 
 </html>

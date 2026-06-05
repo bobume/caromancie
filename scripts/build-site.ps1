@@ -933,3 +933,4 @@ foreach ($page in $data.pages) {
   }
 }
 Write-Host "Site généré dans public/index.html"
+# Note: This script assumes that the data structure in site.json is correct and does not include extensive error handling for simplicity.

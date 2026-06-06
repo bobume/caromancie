@@ -1,0 +1,437 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Caromancie - Consultations &amp; Guidances</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+      background: #f8f5fb;
+      color: #35213f;
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+
+    header {
+      background: rgba(255, 255, 255, 0.94);
+      border-bottom: 1px solid #eadff1;
+      padding: 1.2rem 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(14px);
+    }
+
+    .container {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    header .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    h1 {
+      font-size: 1.75rem;
+      color: #71459a;
+      font-weight: 700;
+    }
+
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      justify-content: flex-end;
+    }
+
+    nav a {
+      color: #71459a;
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: color 0.2s ease;
+      font-weight: 600;
+    }
+
+    nav a:hover {
+      color: #476b5b;
+    }
+
+    .hero {
+      position: relative;
+      min-height: 64vh;
+      padding: 4.5rem 2rem 4rem;
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(260px, 0.95fr);
+      gap: 3rem;
+      align-items: center;
+      overflow: hidden;
+      background: #f2e9f6;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center right;
+      background-repeat: no-repeat;
+      filter: blur(16px) brightness(0.62);
+      transform: scale(1.08);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(248, 245, 251, 0.92), rgba(248, 245, 251, 0.72), rgba(248, 245, 251, 0.22));
+      z-index: 1;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 670px;
+    }
+
+    .hero-content h2 {
+      font-size: clamp(2.1rem, 6vw, 4.8rem);
+      color: #5d347f;
+      margin-bottom: 1.2rem;
+      font-weight: 800;
+      line-height: 1.04;
+    }
+
+    .hero-content p {
+      font-size: 1.05rem;
+      color: #432a4f;
+      margin-bottom: 1rem;
+      max-width: 620px;
+    }
+
+    .hero-image {
+      position: relative;
+      z-index: 3;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .hero-image img {
+      width: min(92%, 430px);
+      height: auto;
+      object-fit: cover;
+      object-position: center right;
+      border-radius: 8px;
+      box-shadow: 0 18px 55px rgba(45, 33, 63, 0.22);
+      display: block;
+    }
+
+    .philosophy {
+      padding: 5rem 2rem;
+      background: #fff;
+    }
+
+    .philosophy h3,
+    .cta-section h3 {
+      text-align: center;
+      font-size: 2rem;
+      color: #35213f;
+      margin-bottom: 2.5rem;
+      font-weight: 800;
+    }
+
+    .philosophy-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .philosophy-card {
+      padding: 1.5rem;
+      background: #faf8fb;
+      border-radius: 8px;
+      border: 1px solid #eadff1;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+
+    .philosophy-card:hover {
+      border-color: #b7c8bd;
+      box-shadow: 0 12px 30px rgba(53, 33, 63, 0.08);
+      transform: translateY(-3px);
+    }
+
+    .philosophy-card h4 {
+      color: #5d347f;
+      margin-bottom: 0.7rem;
+      font-size: 1.12rem;
+      font-weight: 750;
+    }
+
+    .philosophy-card p {
+      color: #54405e;
+      font-size: 0.96rem;
+    }
+
+    .module-button-wrap {
+      margin-top: 1rem;
+    }
+
+    .module-button {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+      padding: 0.7rem 1rem;
+      border-radius: 8px;
+      background: #71459a;
+      color: #fff;
+      text-decoration: none;
+      font-weight: 750;
+      box-shadow: 0 10px 24px rgba(113, 69, 154, 0.18);
+    }
+
+    .module-link {
+      color: #71459a;
+      font-weight: 750;
+      text-decoration-thickness: 2px;
+      text-underline-offset: 0.18em;
+    }
+
+    .module-image {
+      margin: 1.2rem 0;
+    }
+
+    .module-image img {
+      width: 100%;
+      max-height: 520px;
+      object-fit: cover;
+      border-radius: 8px;
+      display: block;
+      box-shadow: 0 12px 34px rgba(53, 33, 63, 0.12);
+    }
+
+    .module-image figcaption {
+      margin-top: 0.45rem;
+      color: #756a7c;
+      font-size: 0.92rem;
+      text-align: center;
+    }
+
+    .module-box {
+      margin: 1rem 0;
+      padding: 1rem;
+      border: 1px solid #d8e5dc;
+      border-radius: 8px;
+      background: #eef4ef;
+      color: #36483e;
+      font-weight: 600;
+    }
+
+    .module-quote {
+      margin: 1rem 0;
+      padding: 0.3rem 0 0.3rem 1rem;
+      border-left: 4px solid #71459a;
+      color: #432a4f;
+    }
+
+    .module-quote p {
+      font-size: 1.08rem;
+      font-weight: 650;
+    }
+
+    .module-quote cite {
+      display: block;
+      margin-top: 0.4rem;
+      color: #756a7c;
+      font-style: normal;
+    }
+
+    .module-separator {
+      margin: 1.6rem 0;
+      border: 0;
+      border-top: 1px solid #eadff1;
+    }
+
+    .module-question {
+      margin: 1rem 0;
+      padding: 1rem;
+      border: 1px solid #eadff1;
+      border-radius: 8px;
+      background: #faf8fb;
+    }
+
+    .module-question summary {
+      cursor: pointer;
+      color: #5d347f;
+      font-weight: 800;
+    }
+
+    .module-question p {
+      margin-top: 0.65rem;
+    }
+
+    .cta-section {
+      padding: 4.5rem 2rem;
+      background: #eef4ef;
+      text-align: center;
+    }
+
+    .cta-section h3 {
+      color: #476b5b;
+      margin-bottom: 1.2rem;
+    }
+
+    .cta-section p {
+      font-size: 1.04rem;
+      color: #36483e;
+      margin: 0 auto 1rem;
+      max-width: 650px;
+    }
+
+    .site-signature {
+      text-align: center;
+      padding: 2.5rem 2rem;
+      color: #54405e;
+      font-size: 1.02rem;
+      background: #fff;
+    }
+
+    footer {
+      background: #35213f;
+      padding: 2.5rem 2rem;
+      text-align: center;
+      color: #f8f5fb;
+      font-size: 0.92rem;
+    }
+
+    footer p {
+      margin-bottom: 0.4rem;
+    }
+
+    @media (max-width: 768px) {
+      header .container {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      nav {
+        justify-content: flex-start;
+      }
+
+      .hero {
+        grid-template-columns: 1fr;
+        padding: 3rem 1.25rem;
+      }
+
+      .hero::after {
+        background: rgba(248, 245, 251, 0.82);
+      }
+
+      .hero-image img {
+        width: min(72%, 320px);
+      }
+
+      .philosophy,
+      .cta-section {
+        padding-left: 1.25rem;
+        padding-right: 1.25rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="container">
+      <h1>Caromancie</h1>
+      <nav>
+        <a href="#philosophie">Approche</a>
+        <a href="#contact">Contact</a>
+        <a href="presentation.html">Boutique</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" aria-label="Bandeau principal">
+      <div class="hero-bg" aria-hidden="true" data-src="images/hero_caromancie-1.png"></div>
+      <div class="hero-content">
+        <h2>Ose t&#39;&#233;couter !!!</h2>
+        <p>Les cartes sont l&#224; pour t&#39;aider &#224; mettre de la lumi&#232;re sur ce que tu ressens
+          d&#233;j&#224; au fond de toi. Parfois, on a juste besoin d&#39;un petit d&#233;clic pour y voir plus clair,
+          reprendre confiance ou avancer plus sereinement.</p>
+        <p>Ici, pas de grands</p>
+        <blockquote class="module-quote">
+          <p>Une phrase inspirante a personnaliser.</p>
+        </blockquote>
+        <p>n moment simple, bienveillant et sinc&#232;re pour faire le point sur ce qui compte vraiment pour toi.</p>
+        <p>Besoin d&#39;y voir plus clair ? On en parle ensemble.</p>
+      </div>
+      <div class="hero-image">
+        <img src="images/hero_caromancie-1.png" alt="Portrait illustratif de Caromancie" loading="lazy">
+      </div>
+    </section>
+
+    <section class="philosophy" id="philosophie">
+      <div class="container">
+        <h3>Ma philosophie</h3>
+        <div class="philosophy-grid">
+          <article class="philosophy-card">
+            <h4>Tes envies ont leur place</h4>
+            <p>On passe trop de temps &#224; suivre ce qu&#39;on attend de nous. Pourtant, ce sont souvent nos vraies
+              envies qui nous montrent la bonne direction. Je t&#39;aide &#224; les &#233;couter un peu plus.</p>
+          </article>
+          <article class="philosophy-card">
+            <h4>Retrouver ce qui te fait du bien</h4>
+            <p>Ce qui te fait sourire, vibrer ou te sentir vivante m&#233;rite de reprendre de la place dans ta vie.
+              M&#234;me les petites choses comptent.</p>
+          </article>
+          <article class="philosophy-card">
+            <h4>Un &#233;change en toute simplicit&#233;</h4>
+            <p>Tu peux venir avec tes questions, tes doutes ou simplement ton ressenti du moment. Ici, il n&#39;y a pas
+              de jugement, juste un &#233;change humain et authentique.</p>
+          </article>
+          <article class="philosophy-card">
+            <h4>Avancer avec l&#233;g&#232;ret&#233;</h4>
+            <p>Les choses profondes n&#39;ont pas besoin d&#39;&#234;tre lourdes. On peut r&#233;fl&#233;chir,
+              &#233;voluer et avancer tout en gardant de la douceur, du sourire et un peu de l&#233;g&#232;ret&#233;.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-section" id="contact">
+      <h3>Envie d&#39;&#233;changer ?</h3>
+      <p>Si tu ressens le besoin de faire le point, d&#39;&#234;tre guid&#233;e ou simplement de prendre un moment pour
+        toi, je serai heureuse de t&#39;accompagner.</p>
+      <p>Consultations en ligne, tranquillement et &#224; ton rythme. &#201;cris-moi et nous trouverons ensemble ce qui
+        te convient le mieux.</p>
+    </section>
+
+    <div class="site-signature">
+      Caromancie - des guidances sinc&#232;res pour les vraies questions de la vie.
+    </div>
+  </main>
+
+  <footer>
+    <p>Caromancie &#169; 2026</p>
+    <p>Guidances authentiques pour tes vraies questions</p>
+  </footer>
+
+  <script src="js/images.js?v=1"></script>
+</body>
+
+</html>

@@ -1,14 +1,6 @@
 name: Optimiser images
 
 on:
-  push:
-    paths:
-      - 'public/images/**'
-      - '!public/images/mobile/**'
-      - '!public/images/desktop/**'
-      - 'scripts/optimiser_images.py'
-      - 'requirements.txt'
-      - '.github/workflows/optimiser-images.yml'
   workflow_dispatch:
 
 permissions:

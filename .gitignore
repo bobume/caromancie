@@ -1,4 +1,8 @@
 node_modules/
-.venv/
+dist/
+.astro/
+.wrangler/
 .env
-.vscode/
+.env.*
+!.env.example
+.DS_Store

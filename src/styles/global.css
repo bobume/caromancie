@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+@theme {
+  --color-paper: #f7f3eb;
+  --color-ink: #253b36;
+  --color-gold: #97703e;
+  --font-sans: "Avenir Next", "Segoe UI", sans-serif;
+  --font-serif: "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
+}
+
+html { scroll-behavior: smooth; scroll-padding-top: 2rem; }
+body { background: var(--color-paper); color: var(--color-ink); font-family: var(--font-sans); }
+::selection { background: #e1ceab; }
+a, button, summary { -webkit-tap-highlight-color: transparent; }
+a { text-underline-offset: .3em; }
+nav a:hover { text-decoration: underline; }
+:focus-visible { outline: 3px solid var(--color-gold); outline-offset: 6px; }
+.brand { font-family: var(--font-serif); font-size: 1.8rem; letter-spacing: -.06em; }
+.eyebrow { font-size: .7rem; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; }
+.button { display: inline-flex; align-items: center; justify-content: center; gap: 1.4rem; min-height: 48px; padding: .9rem 1.5rem; background: var(--color-ink); color: var(--color-paper); border-radius: 99px; font-size: .9rem; }
+.button:hover { background: #38534c; }
+.skip-link { position: absolute; z-index: 10; left: 1rem; top: -10rem; padding: 1rem; background: var(--color-ink); color: white; }
+.skip-link:focus { top: 1rem; }
+.orbit { width: min(100%, 390px); aspect-ratio: 4 / 5; position: relative; margin-inline: auto; overflow: hidden; border: 1px solid #bba784; border-radius: 50% 50% 3px 3px; background: radial-gradient(ellipse at 50% 35%, #e9ddc3, #d3c8aa 58%, #acb5a0); }
+.orbit::before { content: ""; position: absolute; width: 70%; aspect-ratio: 1; border: 1px solid #7c856c; border-radius: 50%; top: 16%; left: 15%; }
+.orbit::after { content: ""; position: absolute; width: 88%; aspect-ratio: 1; border: 1px solid #7c856c; border-radius: 50%; top: 9%; left: 6%; }
+.orbit-number { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--font-serif); font-size: clamp(5rem, 15vw, 7.5rem); font-weight: 400; letter-spacing: -.08em; color: #3c5147; }
+.orbit-star { position: absolute; font-size: 2rem; top: 11%; left: 46%; }
+.orbit-caption { position: absolute; bottom: 9%; width: 100%; text-align: center; font-size: .65rem; letter-spacing: .22em; text-transform: uppercase; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }

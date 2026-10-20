@@ -1,62 +1,36 @@
-# Caromancie
+# Caromancie.be
 
-Site statique simple pour caromancie.be, avec un petit CMS local.
+Nouveau départ : Astro statique, Tailwind CSS 4, TypeScript, Cloudflare Pages.
 
-## Principe
+## Démarrer (Mac / Windows)
 
-Le projet reste volontairement leger :
-- HTML,
-- CSS,
-- JavaScript execute par le navigateur,
-- scripts PowerShell pour le CMS local et le build,
-- pas de Node.js requis.
+Installer la version Node indiquée dans `.nvmrc`, puis dans le terminal de VS Code :
 
-## Lancer le CMS local
-
-Sous Windows, utiliser le raccourci :
-
-```powershell
-.\lancer-cms.bat
+```sh
+npm ci
+npm run dev
 ```
 
-Ou directement :
+Ouvrir l'adresse affichée par Astro, habituellement http://localhost:4321.
 
-```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\cms-server.ps1
+```sh
+npm run check
+npm run build
+npm run preview
 ```
 
-Puis ouvrir :
+## Éditer
 
-```text
-http://localhost:4321/admin/index.html
-```
+- Accueil : `src/pages/index.astro`.
+- Structure et métadonnées : `src/layouts/Base.astro`.
+- Couleurs et styles : `src/styles/global.css`.
+- Fichiers publics : `public/` (tout est publié tel quel).
+- Architecture, périmètre et déploiement : `documentation/refonte-astro-2026-10-20.md`.
 
-## Generer le site public
+Le PDF de référence n'est pas intégré. Les textes actuels sont une introduction originale ; aucune interprétation n'est attribuée au livre.
 
-```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\build-site.ps1
-```
+## Cloudflare Pages
 
-Le site genere se trouve dans `public/`.
+Le build produit `dist/`. Aucun adaptateur serveur, KV ou appel IA n'est nécessaire à ce socle. Les paramètres de production ne sont pas modifiés par cette branche. Voir le document de refonte pour la bascule.
 
-## Images
-
-Le fichier source principal est `public/images/hero_caromancie.png`.
-
-Pour generer des variantes optimisees, utiliser les scripts existants :
-- `scripts/resize_hero_images.py` si Python + Pillow est disponible,
-- `scripts/make_hero_horizontal.ps1` si ImageMagick est installe.
-
-## Deploiement Cloudflare Pages
-
-- Pousser le repo sur GitHub.
-- Dans Cloudflare Pages, utiliser `public` comme dossier de publication.
-- Aucun build Node/npm n'est necessaire pour ce projet.
-
-## Déposer des images pour le site
-
-Carole peut simplement déposer ses images dans `public/images/`.
-Lors d'un push, une action GitHub va automatiquement générer des versions WebP optimisées
-dans `public/images/mobile/` (max 480px) et `public/images/desktop/` (max 1080px).
-Les images originales ne sont jamais écrasées.
-
+Sauvegarde de l'ancien projet : branche `backup/avant-refonte-2026-10-20`, commit `5954dd1dc6b401404e4fb3a1e4a30d1b8122e69b`.

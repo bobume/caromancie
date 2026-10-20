@@ -1,0 +1,46 @@
+---
+import '../styles/global.css';
+interface Props {
+  title: string;
+  description: string;
+  noindex?: boolean;
+}
+const { title, description, noindex = false } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#f7f3eb" />
+    {noindex && <meta name="robots" content="noindex, follow" />}
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="fr_FR" />
+    <meta property="og:site_name" content="Caromancie" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <title>{title}</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#contenu">Aller au contenu</a>
+    <header class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-5 px-6 py-7 md:px-12">
+      <a class="brand" href="/" aria-label="Caromancie, accueil">caromancie<span aria-hidden="true"> ✧</span></a>
+      <nav aria-label="Navigation principale" class="flex flex-wrap gap-x-6 gap-y-3 text-sm">
+        <a href="/#numerologie">Les nombres</a>
+        <a href="/#cartomancie">Les cartes</a>
+        <a href="/#approche">L’approche</a>
+      </nav>
+    </header>
+    <main id="contenu"><slot /></main>
+    <footer class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 border-t border-ink/15 px-6 py-8 text-sm text-ink/70 md:px-12">
+      <a class="brand text-xl" href="/">caromancie ✧</a>
+      <p>Un espace pour prendre du recul, à votre rythme.</p>
+      <p>© {new Date().getFullYear()} Caromancie</p>
+    </footer>
+  </body>
+</html>
